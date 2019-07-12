@@ -1,0 +1,355 @@
+------------------------------------------------------------------------------------------------------------------------
+======================================================CREA8SOCIAL=======================================================
+------------------------------------------------------------------------------------------------------------------------
+=================================================VERSION 7.2.2 CHANGELOG================================================
+------------------------------------------------------------------------------------------------------------------------
+-----------------------This document contains changes from the previous version worth mentioning------------------------
+------------------------------------------------------------------------------------------------------------------------
+
+
+
+------------------------------------------------------NEW FEATURES------------------------------------------------------
+
+
+
+
+------------------------------------------------------IMPROVEMENTS------------------------------------------------------
+
+ADDED Additional text editors (CK Editor, Froala)
+ADDED Create menu to Header
+ADDED Option to enable/disable main menu shortcuts
+IMPROVED Profile menu and Feed Editor on Mobile
+ADDED Security Update
+
+
+
+---------------------------------------------------------BUG FIXES------------------------------------------------------
+
+FIXED AdminCP notification pop
+FIXED Age restriction limit for People filter
+FIXED Alignment issues in RTL Languages
+FIXED Blank feed video Category
+FIXED Broken Feed Embed Video
+FIXED Broken Page Invite
+FIXED Bug in menu setting
+FIXED Cyrillic character encodings
+FIXED Duplicate GIF and Voice
+FIXED Enable/disable gender option
+FIXED Error in saving page details
+FIXED Feed feeling
+FIXED Feed watching
+FIXED Home link
+FIXED Incorrect number of followers count
+FIXED Issue with featured blogs
+FIXED Livestream Language Phrases
+FIXED Notification count
+FIXED Overflowing group profile menu item on mobile
+FIXED Performance issue in Chat
+FIXED Performance issue with emoticons
+FIXED Performance issues in app
+FIXED Privacy issue with GIF images
+FIXED Setting error in non-English sites
+FIXED Stuck widget and menu sorting page and menu builder
+FIXED Unread message count
+FIXED VK login error
+FIXED VK logo
+
+
+
+-----------------------------------------------NEW/UPDATED FILES AND FOLDERS--------------------------------------------
+
+- includes/core.php
+- includes/functions.php
+- includes/functions/admin.php
+- includes/libraries/Google/src/Google/IO/Curl.php
+- includes/libraries/phpmailer/class.phpmailer.php
+- includes/libraries/vk/VK.php
+- includes/loader.php
+- includes/pages/admincp/settings.php
+- includes/pages/editor.php
+- includes/pages/home.php
+- includes/settings/general.php
+- includes/views/admincp/css/style.css
+- includes/views/admincp/html/layouts/header.phtml
+- includes/views/admincp/js/editor.js
+- languages/english.php
+- plugins/ads/loader.php
+- plugins/api/functions/api.php
+- plugins/api/pages/chat.php
+- plugins/api/pages/notification.php
+- plugins/blog/functions/blog.php
+- plugins/chat/functions/chat.php
+- plugins/chat/js/chat.js
+- plugins/chat/loader.php
+- plugins/chat/pages/message.php
+- plugins/comment/functions/comment.php
+- plugins/comment/js/comment.js
+- plugins/emoticons/functions/emoticon.php
+- plugins/emoticons/loader.php
+- plugins/event/loader.php
+- plugins/feed/functions/feed.php
+- plugins/feed/html/editor.phtml
+- plugins/feed/html/feed-content.phtml
+- plugins/feed/html/link.phtml
+- plugins/feed/js/feed.js
+- plugins/forum/html/thread.phtml
+- plugins/group/loader.php
+- plugins/livestreaming/html/golive.phtml
+- plugins/livestreaming/html/iframe.phtml
+- plugins/livestreaming/html/view-page.phtml
+- plugins/livestreaming/languages/english.php
+- plugins/notification/functions/notification.php
+- plugins/notification/js/notification.js
+- plugins/notification/js/nsw.js
+- plugins/notification/loader.php
+- plugins/notification/pages/notification.php
+- plugins/page/functions/page.php
+- plugins/page/html/block/invite/display.phtml
+- plugins/page/html/manage/page-info.phtml
+- plugins/page/html/profile/about/about.phtml
+- plugins/page/html/profile/about/field.phtml
+- plugins/page/languages/english.php
+- plugins/page/loader.php
+- plugins/page/widgets/profile-invite/view.phtml
+- plugins/relationship/functions/relationship.php
+- plugins/sharer/html/sharer_login.phtml
+- plugins/social/pages/social.php
+- plugins/video/html/edit.phtml
+- plugins/video/languages/english.php
+- themes/default/css/style-rtl.css
+- themes/default/css/style.css
+- themes/default/css/style.global.css
+- themes/default/html/layouts/header.phtml
+- themes/default/html/layouts/footer.phtml
+- themes/default/html/layouts/sidemenu.phtml
+- themes/default/html/login/content.phtml
+- themes/default/html/login/portable-login.phtml
+- themes/default/js/ckeditor.js
+- themes/default/js/codemirror.min.js
+- themes/default/js/file.min.js
+- themes/default/js/froala_editor.min.js
+- themes/default/js/froala_editor.pkgd.min.js
+- themes/default/js/jquery.slimscroll.min.js
+- themes/default/js/script.js
+- themes/default/js/tinymce/plugins/imgupload/plugin.min.js
+- themes/default/js/tinymce/plugins/imgupload/upload.php
+- themes/default/js/xml.min.js
+- themes/default/options.php
+- themes/evento/loader.php
+- themes/foxers/html/layouts/footer.phtml
+- themes/foxers/html/login/content.phtml
+- themes/foxers/html/login/portable-login.phtml
+- themes/foxers/html/signup/portable-signup.phtml
+- themes/foxers/loader.php
+- themes/vineo/loader.php
+- widgets/login/view.phtml
+- widgets/peoplefilter/view.phtml
+- widgets/profile-info/view.phtml
+- widgets/signup/view.phtml
+- widgets/social-auth/view.phtml
+
+-------------------------------------------------REMOVED FILES AND FOLDERS----------------------------------------------
+
+- includes/view/admincp/js/tinymce/plugins/imgupload/upload.htm
+- themes/default/js/tinymce/plugins/imgupload/upload.htm
+
+
+
+
+----------------------------------------------------------CHANGES-------------------------------------------------------
+
+ADDED Additional text editors (CK Editor, Froala)
+- includes/loader.php
+- includes/pages/editor.php
+- includes/settings/general.php
+- includes/view/admincp/js/tinymce/plugins/imgupload/plugin.min.js
+- includes/view/admincp/js/tinymce/plugins/imgupload/upload.htm [REMOVED]
+- includes/view/admincp/js/tinymce/plugins/imgupload/upload.php
+- languages/english.php
+- plugins/forum/css/forum.css
+- plugins/forum/functions/forum.php
+- plugins/forum/html/requests/replies.phtml
+- plugins/forum/html/requests/sub_replies.phtml
+- plugins/forum/html/thread.phtml
+- themes/default/js/ckeditor.js
+- plugins/forum/js/forum.js
+- themes/default/js/codemirror.min.js
+- themes/default/js/file.min.js
+- themes/default/js/froala_editor.min.js
+- themes/default/js/froala_editor.pkgd.min.js
+- themes/default/js/script.js
+- themes/default/js/tinymce/plugins/imgupload/plugin.min.js
+- themes/default/js/tinymce/plugins/imgupload/upload.htm [REMOVED]
+- themes/default/js/tinymce/plugins/imgupload/upload.php
+- themes/default/js/xml.min.js
+- themes/evento/loader.php
+- themes/foxers/loader.php
+- themes/vineo/loader.php
+
+ADDED Create menu to Header
+- includes/loader.php
+- languages/english.php
+- plugins/ads/loader.php
+- plugins/group/loader.php
+- plugins/page/loader.php
+- themes/default/css/style.css
+- themes/default/html/layouts/header.phtml
+- themes/default/options.php
+
+ADDED Option to enable/disable main menu shortcuts
+- themes/default/html/layouts/sidemenu.phtml
+- themes/default/options.php
+
+ADDED Security Updates
+- includes/core.php
+- includes/functions.php
+
+FIXED AdminCP notification pop
+- includes/views/admincp/css/style.css
+- includes/views/admincp/html/layouts/header.phtml
+
+FIXED Age restriction limit for People filter
+- widgets/peoplefilter/view.phtml
+
+FIXED Alignment issues in RTL Languages
+- themes/default/css/style-rtl.css
+- themes/default/css/style.global.css
+
+FIXED Blank feed video Category
+- plugins/video/html/edit.phtml
+- plugins/video/languages/english.php
+
+FIXED Broken Feed Embed Video
+- plugins/feed/html/feed-content.phtml
+- plugins/feed/html/link.phtml
+
+FIXED Broken Page Invite
+- plugins/page/html/block/invite/display.phtml
+
+FIXED Bug in menu setting
+- includes/pages/admincp/settings.php
+
+FIXED Cyrillic character encodings
+- includes/core.php
+- includes/libraries/phpmailer/class.phpmailer.php
+
+FIXED Duplicate GIF and Voice
+- plugins/chat/js/chat.js
+- plugins/comment/js/comment.js
+- plugins/feed/js/feed.js
+
+FIXED Enable/disable gender option
+- widgets/profile-info/view.phtml
+- widgets/signup/view.phtml
+
+FIXED Error in saving page details
+- plugins/page/functions/page.php
+- plugins/page/html/manage/page-info.phtml
+- plugins/page/html/profile/about/about.phtml
+- plugins/page/html/profile/about/field.phtml
+- plugins/page/languages/english.php
+- plugins/page/widgets/profile-invite/view.phtml
+
+FIXED Feed feeling
+- plugins/feed/html/editor.phtml
+
+FIXED Feed watching
+- includes/libraries/Google/src/Google/IO/Curl.php
+
+FIXED Home link
+- includes/pages/home.php
+
+FIXED Incorrect number of followers count
+- plugins/relationship/functions/relationship.php
+
+FIXED Issue with featured blogs
+- plugins/blog/functions/blog.php
+
+FIXED Livestream Language Phrases
+- plugins/livestreaming/html/golive.phtml
+- plugins/livestreaming/html/iframe.phtml
+- plugins/livestreaming/html/view-page.phtml
+- plugins/livestreaming/languages/english.php
+
+FIXED Notification count
+- plugins/notification/functions/notification.php
+- plugins/notification/js/notification.js
+- plugins/notification/js/nsw.js
+- plugins/notification/loader.php
+- plugins/notification/pages/notification.php
+
+FIXED Overflowing group profile menu item on mobile
+- plugins/group/loader.php
+
+FIXED Performance issue in Chat
+- plugins/chat/js/chat.js
+- plugins/chat/loader.php
+- plugins/chat/pages/message.php
+- themes/default/js/jquery.slimscroll.min.js
+- themes/default/js/script.js
+
+FIXED Performance issue with emoticons
+- plugins/emoticons/functions/emoticon.php
+- plugins/emoticons/loader.php
+
+FIXED Performance issues in app
+- plugins/api/functions/api.php
+- plugins/api/pages/chat.php
+- plugins/api/pages/notification.php
+
+FIXED Privacy issue with GIF images
+- includes/functions.php
+- plugins/comment/functions/comment.php
+- plugins/event/loader.php
+- plugins/feed/functions/feed.php
+
+FIXED event upload issue
+- plugins/event/pages/profile.php
+
+FIXED blog user Avatar issue
+- plugins/blog/html/view.phtml
+
+FIXED Setting error in non-English sites
+- includes/functions/admin.php
+
+FIXED Stuck widget and menu sorting page and menu builder
+- includes/views/admincp/js/editor.js
+
+FIXED Unread message count
+- plugins/chat/functions/chat.php
+
+FIXED VK login error
+- includes/libraries/vk/VK.php
+- plugins/social/pages/social.php
+
+FIXED VK logo
+- plugins/sharer/html/sharer_login.phtml
+- themes/default/html/layouts/footer.phtml
+- themes/default/html/login/content.phtml
+- themes/default/html/login/portable-login.phtml
+- themes/foxers/html/layouts/footer.phtml
+- themes/foxers/html/login/content.phtml
+- themes/foxers/html/login/portable-login.phtml
+- themes/foxers/html/signup/portable-signup.phtml
+- widgets/login/view.phtml
+- widgets/social-auth/view.phtml
+
+
+--------------------------------------------------------INSTRUCTIONS----------------------------------------------------
+
+
+After adding and updating necessary files,
+
+- Login to your AdminCP.
+
+- Click Maintenance -> Update System
+
+- Test your site.
+
+You may report any bug via our Feedback System at https://crea8social.com/feedback
+
+
+
+
+
+Thank you for using Crea8social.

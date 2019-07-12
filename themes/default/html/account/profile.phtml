@@ -1,0 +1,350 @@
+<?php
+function load_details_pager($app) {
+    header('Content-Type: text/plain');
+    $user = find_user(input("the_userid"));
+    $photos = get_photos($user['id'], 'user-all', 3);
+    $requestPhotos = array();
+    if($photos) {
+        foreach($photos as $photo) {
+            $requestPhotos[] = url_img($photo['path'], 600);
+        }
+    }
+
+    $profileInfo = array();
+    $birthday = $user['birth_day'].','.lang($user['birth_month']);
+    if(can_view_birthdate($user)) {
+        $birthday .= ",".$user['birth_year'];
+    }
+    $profileInfo[] = array('name' => 'online_time', 'value' => apiTimeAgo($user['online_time']), 'data' => array());
+    $profileInfo[] = array('name' => 'gender', 'type' => 'text', 'value' => $user['gender'], 'data' => array());
+    $profileInfo[] = array('name' => 'birth', 'type' => 'text', 'value' => $birthday, 'data' => array());
+    $profileInfo[] = array('name' => 'bio', 'type' => 'text', 'value' => $user['bio'], 'data' => array());
+    $profileInfo[] = array('name' => 'city', 'type' => 'text', 'value' => $user['city'], 'data' => array());
+    $profileInfo[] = array('name' => 'state', 'type' => 'text', 'value' => $user['state'], 'data' => array());
+    $profileInfo[] = array('name' => 'country', 'type' => 'text', 'value' => $user['country'], 'data' => array());
+
+    $profile_categories_tmp = get_custom_field_categories('user');
+    $profile_categories = array();
+    $lang_id = get_lang_id(input('lang_id', $app->lang));
+    foreach ($profile_categories_tmp as $profile_category) {
+        $profile_category['name'] = get_phrase($lang_id, $profile_category['title']);
+        $profile_category['fields'] = array();
+        foreach(get_custom_fields('user', $profile_category['id']) as $field) {
+            $value = get_user_data($field['title']);
+            json_decode($value);
+            $value = json_last_error() == JSON_ERROR_NONE ? current(json_decode($value)) : $value;
+            is_array($value) ? array_walk($value, function(&$v, &$k) {$v = trim($v); $k = trim($k);}) : trim($value);
+            if($value) {
+                $data = explode(",", $field["field_data"]);
+                array_walk($data, function(&$value, &$key) {$value = trim($value); $key = trim($key);});
+                $field = array(
+                    "name" => lang($field['title']),
+                    "type" => $field['field_type'],
+                    "value" => $value,
+                    "data" => $data
+                );
+                $profile_category['fields'][] = $field;
+                $field['category_id'] = $profile_category['id'];
+                $field['category_name'] = $profile_category['name'];
+                $profileInfo[] = $field;
+            }
+        }
+        $profile_categories[$profile_category['id']] = $profile_category;
+    }
+
+    $result = array(
+        'name' => get_user_name($user),
+        'avatar' => get_avatar(200, $user),
+        'id' => $user['id'],
+        'verified' => ($user['verified']) ? true : false,
+        'cover' => get_user_cover($user, false),
+        'friend_status' => friend_status($user['id']),
+        'follow_status' => is_following($user['id']),
+        'recent_photos' => $requestPhotos,
+        'profile_info' => $profileInfo,
+        'profile_categories' => $profile_categories,
+        'can_post_timeline' => (can_post_on_timeline($user)) ? true : false
+    );
+    $result = fire_hook('api.profile.details', $result, array($user));
+    $response = json_encode($result, JSON_PRETTY_PRINT);
+    return $response;
+}
+
+function friends_pager($app) {
+    $user = find_user(input("the_userid"));
+    $limit = 20;
+    $term = input('term');
+
+    if($term) {
+        $users = implode(',', get_friends($user['id']));
+        $fields = get_users_fields();
+        if(empty($users)) $users = "0";
+        $query = "SELECT {$fields} FROM users WHERE id IN ({$users}) AND (first_name LIKE '%{$term}%' OR last_name LIKE '%{$term}%' OR email_address LIKE '%{$term}%' OR username LIKE '%{$term}%')";
+        $users = paginate($query, $limit);
+    } else {
+        $users = get_friends($user['id']);
+
+        if(empty($users)) $users = array("0");
+        $users = list_connections($users, $limit);
+    }
+    $result = array();
+    if($users) {
+        foreach($users->results() as $user) {
+            $result[] = api_arrange_user($user);
+        }
+    }
+    return json_encode($result);
+}
+
+function photos_pager($app) {
+    $user = find_user(input("the_userid"));
+    $limit = input("limit", 10);
+    $offset = input("offset", 0);
+    $photos = get_photos($user['id'], 'user-all', $limit, $offset);
+    $result = array();
+    foreach($photos as $photo) {
+        $result[] = array(
+            'id' => $photo['id'],
+            'path' => url_img($photo['path'], 600)
+        );
+    }
+
+    return json_encode($result);
+}
+
+function albums_pager($app) {
+    $user = find_user(input("the_userid"));
+    $limit = input("limit", 10);
+    $offset = input("offset", 0);
+    $albums = get_photo_albums('user', $user['id'], false, $limit, $offset);
+
+    $result = array();
+    if($offset == 0) {
+        $count = count_user_photos($user['id']);
+        if($count > 0) {
+            $result[] = array(
+                'id' => "profile",
+                'title' => "profile-photos",
+                'image' => url_img(get_last_user_photo($user['id'])['path'], 600),
+                "userid" => $user['id']
+            );
+        }
+
+        $count = count_user_photos($user['id'], "user-posts");
+        if($count > 0) {
+            $result[] = array(
+                'id' => "timeline",
+                'title' => "timeline-photos",
+                'image' => url_img(get_last_user_photo($user['id'], "user-posts")['path'], 600),
+                "userid" => $user['id']
+            );
+        }
+
+        $count = count_user_photos($user['id'], 'profile-cover');
+        if($count > 0) {
+            $result[] = array(
+                'id' => "cover",
+                'title' => "cover-photos",
+                'image' => url_img(get_last_user_photo($user['id'], 'profile-cover')['path'], 600),
+                "userid" => $user['id']
+            );
+        }
+    }
+
+    foreach($albums as $album) {
+        $result[] = array(
+            'id' => $album['id'],
+            'title' => $album['title'],
+            'image' => $album['image']
+        );
+    }
+
+    return json_encode($result);
+}
+
+
+function change_avatar_pager($app) {
+    $result = array(
+        'status' => 0,
+        'message' => lang('general-image-error'),
+        'data_one' => '',
+        'id' => ''
+    );
+
+    if(input_file('avatar')) {
+        $uploader = new Uploader(input_file('avatar'), 'image');
+        $uploader->setPath(get_userid().'/'.date('Y').'/photos/profile/');
+        if($uploader->passed()) {
+            $avatar = $uploader->resize()->toDB("profile-avatar", get_userid(), 1)->result();
+
+            update_user_avatar($avatar, null, $uploader->insertedId, false);
+            $result['status'] = 1;
+            $result['data_one'] = url_img($avatar, 200);
+            //$result['large'] = url_img($avatar, 920);
+        } else {
+            $result['message'] = $uploader->getError();
+        }
+    }
+
+    return json_encode($result);
+}
+
+function change_cover_pager($app) {
+    $result = array(
+        'status' => 0,
+        'message' => lang('general-image-error'),
+        'data_one' => ''
+    );
+
+    if(input_file('cover')) {
+        $uploader = new Uploader(input_file('cover'), 'image');
+        $uploader->setPath(get_userid().'/'.date('Y').'/photos/profile/cover/');
+        if($uploader->passed()) {
+            $original = $uploader->resize($uploader->getWidth(), null, 'fill', 'any')->toDB("profile-cover", get_userid())->result();
+
+            $user = get_user();
+            //delete the old resized cover
+            if($user['resized_cover']) {
+                delete_file(path($user['resized_cover']));
+            }
+            //fire_hook("user.cover", null, array($original, $uploader->insertedId));
+            $uploader->setPath(get_userid().'/'.date('Y').'/photos/profile/cover/resized/');
+            $cover = $uploader->crop(0, 0, $uploader->getWidth(), ($uploader->getWidth() * 0.4))->result();
+            $result['data_one'] = url_img($cover);
+            update_user(array('cover' => $original, 'resized_cover' => $cover));
+            $result['status'] = 1;
+        } else {
+            $result['message'] = $uploader->getError();
+        }
+    }
+
+    return json_encode($result);
+}
+
+function save_details_pager($app) {
+    header('Content-Type: text/plain');
+    $result = array(
+        'status' => 0,
+        'message' => lang('profile-save-error'),
+        'details' => array()
+    );
+
+    $type = input('action', 'general');
+
+    switch($type) {
+        case 'general':
+            $details = array();
+            $result['status'] = 1;
+
+            $username = input('username');
+            $username_changed = false;
+            if($result['status'] && $username) {
+                if(config('allow-change-username', true) and isset($username) and $username != get_user_data('username')) {
+                    validator(array('username' => $username), array('username' => 'required|alphanum|usernameedit'));
+                    if(validation_passes()) {
+                        $details['username'] = $username;
+                        $username_changed = true;
+                        if(config('loose-verify-badge-username', true)) {
+                            $details['verified'] = 0;
+                        }
+                    } else {
+                        $result['status'] = 0;
+                        $result['message'] = validation_first();
+                    }
+                }
+            }
+
+            $email_address = input('email_address');
+            if($result['status'] && $email_address && $result['status']) {
+                if(config('allow-change-email', true) and isset($email_address) and $email_address != get_user_data('email_address')) {
+                    validator(array('email_address' => $email_address), array('email_address' => 'email'));
+                    if(validation_passes()) {
+                        $userid = get_userid();
+                        $check = db()->query("SELECT `id` FROM `users` WHERE `email_address` = '".$email_address."' AND id != '".$userid."'");
+                        if($check->num_rows > 0) {
+                            $result['status'] = 0;
+                            $result['message'] = lang('email-address-is-in-use');
+                        } else {
+                            $details['email_address'] = $email_address;
+                        }
+                    } else {
+                        $result['status'] = 0;
+                        $result['message'] = validation_first();
+                    }
+                }
+            }
+
+            $first_name = input('first_name');
+            if($result['status'] && $first_name) {
+                validator(array('first_name' => $first_name), array('first_name' => 'required|predefined'));
+                if(validation_passes()) {
+                    $details['first_name'] = $first_name;
+                } else {
+                    $result['message'] = validation_first();
+                    $result['status'] = 0;
+                }
+            }
+
+            $last_name = input('last_name');
+            if($result['status'] && $last_name) {
+                validator(array('last_name' => $last_name), array('last_name' => 'required|predefined'));
+                if(validation_passes()) {
+                    $details['last_name'] = $last_name;
+                } else {
+                    $result['message'] = validation_first();
+                    $result['status'] = 0;
+                }
+            }
+
+            if($result['status']) {
+                $details['completion'] = profile_completion($details);
+                if(save_user_general_settings($details)) {
+                    $result['details'] = $details;
+                    $result['message'] = lang('general-settings-saved');
+                    fire_hook('user.type.signup.completed', get_userid());
+                    fire_hook('users.category.update', 'update', array($details, get_userid(), true));
+                    if($username_changed) {
+                        login_with_user(find_user(get_userid()), true);
+                    }
+                } else {
+                    $result['status'] = 0;
+                }
+            }
+        break;
+
+        case 'custom':
+            $details = input('details', array());
+            array_walk($details, function(&$value, &$key) {$value = trim(is_array($value) ? json_encode($value) : $value); $key = trim($key);});
+            $category_id = input('category_id');
+            $category = get_custom_field_category($category_id);
+            if($category) {
+                $field_rules = array();
+                foreach(get_custom_fields('user', $category_id) as $field) {
+                    if($field['required']) {
+                        $field_rules[$field['title']] = 'required';
+                    }
+                }
+
+                !$field_rules ?: validator(input('val.fields'), $field_rules);
+                if(validation_passes() && !$result['message']) {
+                    if(save_user_profile_details($details)) {
+                        $result['status'] = 1;
+                        $result['message'] = lang('profile-saved');
+                    }
+                } else {
+                    $result['message'] = validation_first();
+                }
+            } else {
+                $result['message'] = lang('invalid-category');
+            }
+        break;
+
+        default:
+            $result['status'] = 0;
+            $result['message'] = lang('invalid-type');
+        break;
+    }
+
+    $response = json_encode($result, JSON_PRETTY_PRINT);
+    return $response;
+}
